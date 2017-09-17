@@ -1,0 +1,8 @@
+﻿{
+  "Data": {
+    "ConnectionString": "Server=10.105.10.29;Uid=svhadmin;Pwd=svhadmin.641;Database=svnh_line;Pooling=false;"
+  },
+  "Procedure": {
+    "LineBeaconCurrentDate_GetAll": "spLineBeaconCurrentDate_GetAll"
+  }
+}
