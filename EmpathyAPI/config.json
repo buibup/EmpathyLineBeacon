@@ -3,6 +3,7 @@
     "ConnectionString": "Server=10.105.10.29;Uid=svhadmin;Pwd=svhadmin.641;Database=svnh_line;Pooling=false;"
   },
   "Procedure": {
-    "LineBeaconCurrentDate_GetAll": "spLineBeaconCurrentDate_GetAll"
+    "LineBeaconCurrentDate_GetAll": "spLineBeaconCurrentDate_GetAll",
+    "test": "select `timestamp`,topic,payload from mqtt_event WHERE DATE(`timestamp`)  = '2017-09-15'  ORDER BY `timestamp` DESC"
   }
 }
