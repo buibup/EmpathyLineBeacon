@@ -22,9 +22,9 @@ namespace EmpathyLibrary.DataAccess
             using (MySqlConnection connection = new MySqlConnection(GlobalConfig.Config["Data:ConnectionString"]))
             {
                 connection.Open();
-                using (MySqlCommand cmd = new MySqlCommand(GlobalConfig.Config["Procedure:test"], connection))
+                using (MySqlCommand cmd = new MySqlCommand(GlobalConfig.Config["Procedure:LineBeaconCurrentDate_GetAll"], connection))
                 {
-                    //cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandType = CommandType.StoredProcedure;
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
