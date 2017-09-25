@@ -5,25 +5,25 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using EmpathyLibrary.DataAccess;
 using EmpathyLibrary.Models;
+using System.Net.Http;
 
 namespace EmpathyAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class ValuesController : Controller
     {
         // GET api/values
         [HttpGet]
-        public IEnumerable<SignalLineBeacons> Get()
+        public IEnumerable<string> Get()
         {
-            var data = MySqlConnector.GetSignalLineBeacons_All();
-            return data;
+            return new string[] { "value1", "value2" };
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet]
+        public async Task<IActionResult> GetLineImageByUserId(string userId, int width, int height)
         {
-            return "value";
+            return await MySqlConnector.GetLineImageByUserId(userId, width, height);
         }
 
         // POST api/values

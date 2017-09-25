@@ -7,6 +7,10 @@ using MySql.Data.MySqlClient;
 using Dapper;
 using System.Linq;
 using Newtonsoft.Json;
+using System.Net.Http;
+using EmpathyAPI.Helpers;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace EmpathyLibrary.DataAccess
 {
@@ -60,7 +64,7 @@ namespace EmpathyLibrary.DataAccess
             }
 
             var dataEnters = enters
-                .GroupBy(e => e.LineBeacon.Source.userId)
+                .GroupBy(e => e.LineBeacon.Beacon.hwid)
                 .Select(grp => new
                 {
                     grp.Key,
@@ -70,7 +74,7 @@ namespace EmpathyLibrary.DataAccess
 
 
             var dataLeves = leaves
-                .GroupBy(e => e.LineBeacon.Source.userId)
+                .GroupBy(e => e.LineBeacon.Beacon.hwid)
                 .Select(grp => new
                 {
                     grp.Key,
@@ -92,6 +96,49 @@ namespace EmpathyLibrary.DataAccess
             output = output.OrderByDescending(x => x.Timestamp).ToList();
 
             return output;
+        }
+
+        public static async Task<FileStreamResult> GetLineImageByUserId(string userId, int w, int h)
+        {
+            byte[] imageBytes = Convert.FromBase64String(GlobalConfig.Config["Image:NoImageFound"]);
+            using (var conn = new MySqlConnection(GlobalConfig.Config["Data:ConnectionString"]))
+            {
+                conn.Open();
+                using (var cmd = new MySqlCommand(GlobalConfig.Config["Procedure:GetLineImageByUserId"], conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@usrId", userId);
+                    try
+                    {
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                var data = reader["pictureBase64"].ToString();
+
+                                if (string.IsNullOrEmpty(data))
+                                {
+                                    return await Helper.ByteArrayToImage(imageBytes, w, h);
+                                }
+                                else
+                                {
+                                    var stringBase64 = Encoding.ASCII.GetString((byte[])(reader["pictureBase64"]));
+                                    imageBytes = Convert.FromBase64String(stringBase64);
+
+                                    return await Helper.ByteArrayToImage(imageBytes, w, h);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        return await Helper.ByteArrayToImage(imageBytes, w, h);
+                    }
+
+                }
+            }
+
+            return await Helper.ByteArrayToImage(imageBytes, w, h);
         }
     }
 }
